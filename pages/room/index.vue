@@ -12,6 +12,7 @@ const getData = async () => {
 try {
     const res = await axios.get(api)
     roomsList.value = res.data.result
+    
 } catch (error) {
     throw new Error(error)
 }
@@ -23,7 +24,7 @@ getData()
   <h1>房型頁面{{ route.fullPath }}</h1>
   <div class="container mt-4">
     <div class="row justify-content-center">
-      <div class="col-8 col-md-6 col-lg-3" v-for="room in roomsList" :key="room.id">
+      <div class="col-8 col-md-6 col-lg-3" v-for="room in roomsList" :key="room._id">
         <div class="card h-100 shadow-sm" @click="router.push('/room/_id')">
           <img :src="room.imageUrl" class="card-img-top" alt="Room Image" />
           <div class="card-body d-flex flex-column">
