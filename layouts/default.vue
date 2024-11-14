@@ -20,7 +20,7 @@
             <NuxtLink to="/" class="nav-link">Home</NuxtLink>
           </li>
           <li class="nav-item">
-            <NuxtLink to="/room" class="nav-link" target="_blank">room</NuxtLink>
+            <NuxtLink to="/room" class="nav-link">room</NuxtLink>
           </li>
         </ul>
       </div>
