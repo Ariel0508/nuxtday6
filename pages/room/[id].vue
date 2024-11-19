@@ -1,24 +1,26 @@
 <script setup>
-import axios from "axios";
 const router = useRouter();
 const route = useRoute();
 
 // 串接 API 取得房型詳細資料
 // API path : https://nuxr3.zeabur.app/api/v1/rooms/{id}
 // 將資料渲染至下方的 div.room-page 區塊
-const roomInfo = ref({});
 const { id } = route.params;
-const api = `https://nuxr3.zeabur.app/api/v1/rooms/${id}`;
-const getData = async () => {
-  try {
-    const res = await axios.get(api);
-    roomInfo.value = res.data.result;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
 
-getData();
+const { data: roomInfo } = await useAsyncData(
+  "room",
+  () => $fetch(`https://nuxr3.zeabur.app/api/v1/rooms/${id}`),
+  {
+    transform: (response) => {
+      return response.result || {};
+    },
+    onResponseError({ response }) {
+    const { message } = response._data;
+    console.error("Error:", message);
+    router.push("/");
+  },
+  }
+);
 </script>
 
 <template>
@@ -42,13 +44,13 @@ getData();
               class="room-main-image"
             />
             <ul class="room-image-list">
-            <li v-for="(image, i) in roomInfo.imageUrlList" :key="i">
-              <img
-                :src="image"
-                :alt="`${roomInfo.name} image ${i + 1}`"
-                class="room-image"
-              />
-            </li>
+              <li v-for="(image, i) in roomInfo.imageUrlList" :key="i">
+                <img
+                  :src="image"
+                  :alt="`${roomInfo.name} image ${i + 1}`"
+                  class="room-image"
+                />
+              </li>
             </ul>
           </div>
 
@@ -65,24 +67,36 @@ getData();
               <h2>房間配置</h2>
               <ul v-for="layout in roomInfo.layoutInfo" :key="layout.title">
                 <li>
-                {{ layout.title }}: {{ layout.isProvide ? '提供' : '不提供' }}
+                  {{ layout.title }}: {{ layout.isProvide ? "提供" : "不提供" }}
                 </li>
               </ul>
             </div>
 
             <div class="info-block">
               <h2>房內設施</h2>
-              <ul v-for="facility in roomInfo.facilityInfo" :key="facility.title">
-                <li>{{ facility.title }}: {{ facility.isProvide ? '提供' : '不提供' }}</li>
+              <ul
+                v-for="facility in roomInfo.facilityInfo"
+                :key="facility.title"
+              >
+                <li>
+                  {{ facility.title }}:
+                  {{ facility.isProvide ? "提供" : "不提供" }}
+                </li>
               </ul>
             </div>
 
             <div class="info-block">
               <h2>客房備品</h2>
               <ul>
-                <ul v-for="amenity in roomInfo.amenityInfo" :key="amenity.title">
-                <li>{{ amenity.title }}: {{ amenity.isProvide ? '提供' : '不提供' }}</li>
-              </ul>
+                <ul
+                  v-for="amenity in roomInfo.amenityInfo"
+                  :key="amenity.title"
+                >
+                  <li>
+                    {{ amenity.title }}:
+                    {{ amenity.isProvide ? "提供" : "不提供" }}
+                  </li>
+                </ul>
               </ul>
             </div>
           </div>
